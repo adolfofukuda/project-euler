@@ -304,3 +304,33 @@
                         (* a b)))))
 
 (euler-32)
+
+(defn as-digits [num]
+  (map #(Character/getNumericValue %) (str num)))
+
+(defn gcd [a b] (if (zero? b) a (recur b (mod a b))))
+(defn lcm [a b] (/ (* a b) (gcd a b)))
+
+(defn curious-frac? [num den]
+  (let [n (as-digits num)
+        d (as-digits den)]
+  (and (= (second n) (first d))
+       (not (zero? (first n)))
+       (not (zero? (second d)))
+       (= (/ (first n) (second d))
+          (/ num den))
+       (< (/ num den) 1))))
+
+(defn reduce-fraction [[n d]]
+  (let [g (gcd n d)]
+    [(/ n g) (/ d g)]))
+
+(defn euler-33 []
+  (let [fracs (for [num (range 10 100)
+                    den (range num 100)
+                    :when (curious-frac? num den)]
+                [num den])]
+    (reduce-fraction [(reduce * (map first fracs))
+                      (reduce * (map second fracs))])))
+
+(time (euler-33))
